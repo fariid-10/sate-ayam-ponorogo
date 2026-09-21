@@ -10,26 +10,41 @@ export default function Header() {
 
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > 20) {
-        setIsScrolled(true);
-      } else {
+      if (window.scrollY < 20) {
         setIsScrolled(false);
+        return;
+      }
+
+      const heroElement = document.getElementById("hero");
+      if (heroElement) {
+        const rect = heroElement.getBoundingClientRect();
+        if (rect.bottom <= 80) {
+          setIsScrolled(true);
+        } else {
+          setIsScrolled(false);
+        }
+      } else {
+        if (window.scrollY > 500) {
+          setIsScrolled(true);
+        } else {
+          setIsScrolled(false);
+        }
       }
     };
 
+    handleScroll();
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+      className={`fixed top-0 left-0 right-0 z-50 transition-colors duration-500 ease-in-out py-4 ${
         isScrolled
-          ? "bg-[#1C0D05]/90 backdrop-blur-md shadow-lg py-3.5 border-b border-amber-900/30"
-          : "bg-transparent py-5"
+          ? "bg-[#1C0D05]/95 backdrop-blur-md shadow-lg border-b border-amber-900/30"
+          : "bg-white/15 backdrop-blur-md border-b border-white/20 shadow-sm"
       }`}
     >
-      {/* Container utama dengan max-w-6xl agar presisi di tengah */}
       <div className="mx-auto max-w-6xl px-6 md:px-10 flex items-center justify-between">
         
         {/* LOGO */}
@@ -44,45 +59,32 @@ export default function Header() {
           />
         </Link>
 
-        {/* NAVIGASI UTAMA */}
-        <nav className="hidden md:flex items-center gap-8 text-sm font-medium tracking-wide text-amber-50">
-          <Link 
-            href="/" 
-            className="transition-colors duration-200 hover:text-amber-300 drop-shadow-md"
-          >
+        {/* NAVIGASI UTAMA DESKTOP */}
+        <nav className="hidden md:flex items-center gap-10 text-base lg:text-lg font-semibold tracking-wide text-amber-50">
+          <a href="#hero" className="transition-colors hover:text-amber-300 drop-shadow-md">
             Home
-          </Link>
-          <Link 
-            href="/about" 
-            className="transition-colors duration-200 hover:text-amber-300 drop-shadow-md"
-          >
-            About
-          </Link>
-          <Link 
-            href="/menu" 
-            className="transition-colors duration-200 hover:text-amber-300 drop-shadow-md"
-          >
+          </a>
+          <a href="#menu" className="transition-colors hover:text-amber-300 drop-shadow-md">
             Menu
-          </Link>
-          <Link 
-            href="/contact" 
-            className="transition-colors duration-200 hover:text-amber-300 drop-shadow-md"
-          >
-            Contact
-          </Link>
+          </a>
+          <a href="#lokasi" className="transition-colors hover:text-amber-300 drop-shadow-md">
+            Lokasi
+          </a>
         </nav>
 
-        {/* TOMBOL PESAN SEKARANG */}
+        {/* TOMBOL PESAN SEKARANG NAVBAR DESKTOP */}
         <div className="hidden md:flex items-center">
-          <Link
-            href="/contact"
+          <a
+            href="https://wa.me/6285850125627?text=Halo%20Mas%20Yudi,%20saya%20mau%20pesan%20Sate%20Ayam%20Ponorogo"
+            target="_blank"
+            rel="noopener noreferrer"
             className="rounded-full bg-[#FFF8E7] px-6 py-2.5 text-sm font-semibold text-[#3D1E0B] shadow-md transition-all duration-200 hover:bg-[#F5E6C8] hover:shadow-lg active:scale-95"
           >
             Pesan Sekarang
-          </Link>
+          </a>
         </div>
 
-        {/* TOMBOL HAMBURGER MOBILE */}
+        {/* HAMBURGER MOBILE */}
         <button
           onClick={() => setIsMenuOpen(!isMenuOpen)}
           type="button"
@@ -102,58 +104,39 @@ export default function Header() {
 
       </div>
 
-      {/* DROPDOWN MENU MOBILE */}
+      {/* DROPDOWN MOBILE */}
       {isMenuOpen && (
         <div className="md:hidden mt-3 bg-[#1C0D05]/95 backdrop-blur-md border-t border-amber-900/40 px-6 pt-4 pb-6 shadow-xl">
           <ul className="flex flex-col gap-3 font-medium text-amber-50 text-base">
             <li>
-              <Link 
-                href="/" 
-                onClick={() => setIsMenuOpen(false)}
-                className="block py-2 px-3 rounded-lg hover:bg-white/10"
-              >
+              <a href="#hero" onClick={() => setIsMenuOpen(false)} className="block py-2 px-3 rounded-lg hover:bg-white/10">
                 Home
-              </Link>
+              </a>
             </li>
             <li>
-              <Link 
-                href="/about" 
-                onClick={() => setIsMenuOpen(false)}
-                className="block py-2 px-3 rounded-lg hover:bg-white/10"
-              >
-                About
-              </Link>
-            </li>
-            <li>
-              <Link 
-                href="/menu" 
-                onClick={() => setIsMenuOpen(false)}
-                className="block py-2 px-3 rounded-lg hover:bg-white/10"
-              >
+              <a href="#menu" onClick={() => setIsMenuOpen(false)} className="block py-2 px-3 rounded-lg hover:bg-white/10">
                 Menu
-              </Link>
+              </a>
             </li>
             <li>
-              <Link 
-                href="/contact" 
-                onClick={() => setIsMenuOpen(false)}
-                className="block py-2 px-3 rounded-lg hover:bg-white/10"
-              >
-                Contact
-              </Link>
+              <a href="#lokasi" onClick={() => setIsMenuOpen(false)} className="block py-2 px-3 rounded-lg hover:bg-white/10">
+                Lokasi
+              </a>
             </li>
-            <li>
-              <Link 
-                href="/contact" 
+            <li className="pt-2">
+              <a
+                href="https://wa.me/6285850125627?text=Halo%20Mas%20Yudi,%20saya%20mau%20pesan%20Sate%20Ayam%20Ponorogo"
+                target="_blank"
+                rel="noopener noreferrer"
                 onClick={() => setIsMenuOpen(false)}
-                className="block mt-2 text-center rounded-full bg-[#FFF8E7] py-2.5 text-[#3D1E0B] font-semibold shadow-md hover:bg-[#F5E6C8]"
+                className="block text-center rounded-full bg-[#FFF8E7] py-3 text-sm font-semibold text-[#3D1E0B] shadow-md hover:bg-[#F5E6C8]"
               >
                 Pesan Sekarang
-              </Link>
+              </a>
             </li>
           </ul>
         </div>
       )}
-    </header>
+    </header> 
   );
 }
