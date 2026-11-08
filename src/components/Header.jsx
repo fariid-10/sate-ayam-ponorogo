@@ -45,7 +45,7 @@ export default function Header() {
           : "bg-white/15 backdrop-blur-md border-b border-white/20 shadow-sm"
       }`}
     >
-      <div className="mx-auto max-w-6xl px-6 md:px-10 flex items-center justify-between">
+      <div className="mx-auto max-w-6xl px-4 sm:px-6 md:px-10 flex items-center justify-between">
         
         {/* LOGO */}
         <Link href="/" className="flex items-center group transition-transform duration-200 hover:scale-105">
@@ -60,22 +60,25 @@ export default function Header() {
         </Link>
 
         {/* NAVIGASI UTAMA DESKTOP */}
-        <nav className="hidden md:flex items-center gap-10 text-base lg:text-lg font-semibold tracking-wide text-amber-50">
-          <a href="#hero" className="transition-colors hover:text-amber-300 drop-shadow-md">
+        <nav className="hidden md:flex items-center gap-8 lg:gap-10 text-base lg:text-lg font-semibold tracking-wide text-amber-50">
+          <Link href="/#hero" className="transition-colors hover:text-amber-300 drop-shadow-md">
             Home
-          </a>
-          <a href="#menu" className="transition-colors hover:text-amber-300 drop-shadow-md">
+          </Link>
+          <Link href="/#about" className="transition-colors hover:text-amber-300 drop-shadow-md">
+            Tentang Kami
+          </Link>
+          <Link href="/#menu" className="transition-colors hover:text-amber-300 drop-shadow-md">
             Menu
-          </a>
-          <a href="#lokasi" className="transition-colors hover:text-amber-300 drop-shadow-md">
+          </Link>
+          <Link href="/#lokasi" className="transition-colors hover:text-amber-300 drop-shadow-md">
             Lokasi
-          </a>
+          </Link>
         </nav>
 
         {/* TOMBOL PESAN SEKARANG NAVBAR DESKTOP */}
         <div className="hidden md:flex items-center">
           <a
-            href="https://wa.me/6285850125627?text=Halo%20Mas%20Yudi,%20saya%20mau%20pesan%20Sate%20Ayam%20Ponorogo"
+            href="https://wa.me/6285850125627?text=Halo%20Mas%20Yudi,%20saya%20mau%20pesan%20Sate%20Ayam%20Ponorogo%20dari%20website"
             target="_blank"
             rel="noopener noreferrer"
             className="rounded-full bg-[#FFF8E7] px-6 py-2.5 text-sm font-semibold text-[#3D1E0B] shadow-md transition-all duration-200 hover:bg-[#F5E6C8] hover:shadow-lg active:scale-95"
@@ -109,19 +112,24 @@ export default function Header() {
         <div className="md:hidden mt-3 bg-[#1C0D05]/95 backdrop-blur-md border-t border-amber-900/40 px-6 pt-4 pb-6 shadow-xl">
           <ul className="flex flex-col gap-3 font-medium text-amber-50 text-base">
             <li>
-              <a href="#hero" onClick={() => setIsMenuOpen(false)} className="block py-2 px-3 rounded-lg hover:bg-white/10">
+              <Link href="/#hero" onClick={() => setIsMenuOpen(false)} className="block py-2 px-3 rounded-lg hover:bg-white/10">
                 Home
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="#menu" onClick={() => setIsMenuOpen(false)} className="block py-2 px-3 rounded-lg hover:bg-white/10">
+              <Link href="/#about" onClick={() => setIsMenuOpen(false)} className="block py-2 px-3 rounded-lg hover:bg-white/10">
+                Tentang Kami
+              </Link>
+            </li>
+            <li>
+              <Link href="/#menu" onClick={() => setIsMenuOpen(false)} className="block py-2 px-3 rounded-lg hover:bg-white/10">
                 Menu
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="#lokasi" onClick={() => setIsMenuOpen(false)} className="block py-2 px-3 rounded-lg hover:bg-white/10">
+              <Link href="/#lokasi" onClick={() => setIsMenuOpen(false)} className="block py-2 px-3 rounded-lg hover:bg-white/10">
                 Lokasi
-              </a>
+              </Link>
             </li>
             <li className="pt-2">
               <a
