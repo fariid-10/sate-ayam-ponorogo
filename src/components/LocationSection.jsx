@@ -3,23 +3,30 @@
 import { useState } from "react";
 
 export default function LocationSection() {
-  // State untuk level zoom peta mandiri per lokasi
-  const [zoomLevels, setZoomLevels] = useState({
-    mojosari: 15,
-    pacet: 15,
+  // State untuk kontrol zoom skala visual (instan, 0ms latency, tanpa reload iframe)
+  const [zoomScales, setZoomScales] = useState({
+    mojosari: 1,
+    pacet: 1,
   });
 
   const handleZoomIn = (id) => {
-    setZoomLevels((prev) => ({
+    setZoomScales((prev) => ({
       ...prev,
-      [id]: Math.min(prev[id] + 1, 19),
+      [id]: Math.min(Number((prev[id] + 0.25).toFixed(2)), 2.25),
     }));
   };
 
   const handleZoomOut = (id) => {
-    setZoomLevels((prev) => ({
+    setZoomScales((prev) => ({
       ...prev,
-      [id]: Math.max(prev[id] - 1, 11),
+      [id]: Math.max(Number((prev[id] - 0.25).toFixed(2)), 1),
+    }));
+  };
+
+  const handleResetZoom = (id) => {
+    setZoomScales((prev) => ({
+      ...prev,
+      [id]: 1,
     }));
   };
 
@@ -34,7 +41,7 @@ export default function LocationSection() {
       note: "Harap konfirmasi via WhatsApp terlebih dahulu agar sate dibakar hangat & disiapkan tepat waktu saat Anda tiba.",
       tagColor: "bg-amber-100 text-amber-900 border-amber-300",
       mapsUrl: "https://www.google.com/maps/search/?api=1&query=Perumahan+Grand+Mansion+Pungging+Mojosari+Mojokerto",
-      getEmbedUrl: (z) => `https://maps.google.com/maps?q=Perumahan%20Grand%20Mansion%20Pungging%20Mojosari%20Mojokerto&t=&z=${z}&ie=UTF8&iwloc=&output=embed`,
+      mapsEmbedUrl: "https://maps.google.com/maps?q=Perumahan%20Grand%20Mansion%20Pungging%20Mojosari%20Mojokerto&t=&z=16&ie=UTF8&iwloc=&output=embed",
       waText: "Halo Mas Yudi, saya mau konfirmasi ambil pesanan sate di rumah Mojosari.",
       isPrimary: false,
     },
@@ -49,7 +56,7 @@ export default function LocationSection() {
       tagColor: "bg-[#8B3E13] text-white border-[#8B3E13]",
       // Titik lokasi resmi Google Maps yang diberikan oleh user
       mapsUrl: "https://maps.app.goo.gl/qQEKK8RTYV8iDsER6",
-      getEmbedUrl: (z) => `https://maps.google.com/maps?q=Pacet%2C%20Mojokerto%2C%20Jawa%20Timur&t=&z=${z}&ie=UTF8&iwloc=&output=embed`,
+      mapsEmbedUrl: "https://maps.google.com/maps?q=Pacet%2C%20Mojokerto%2C%20Jawa%20Timur&t=&z=16&ie=UTF8&iwloc=&output=embed",
       waText: "Halo Mas Yudi, apakah lapak sate di Pacet malam ini buka? Saya berencana mampir.",
       isPrimary: true,
     },
@@ -108,24 +115,41 @@ export default function LocationSection() {
 
                 {/* WADAH GOOGLE MAPS INTERAKTIF: HOVER NGEZOOM DIKIT + TOMBOL ZOOM MANUAL (+ & -) */}
                 <div className="group/map relative w-full h-56 sm:h-64 rounded-2xl overflow-hidden border border-amber-900/15 mb-5 shadow-sm bg-amber-950/10 transition-all duration-300 hover:shadow-md hover:border-amber-400">
-                  {/* Iframe Peta: otomatis ngezoom dikit saat kursor berada di atas wadah peta */}
-                  <iframe
-                    title={`Google Maps ${loc.title}`}
-                    src={loc.getEmbedUrl(zoomLevels[loc.id])}
-                    className="w-full h-full border-0 filter contrast-[1.03] transition-transform duration-500 ease-out group-hover/map:scale-[1.04] origin-center"
-                    loading="lazy"
-                    allowFullScreen
-                    referrerPolicy="no-referrer-when-downgrade"
-                  />
+                  
+                  {/* Outer wrapper: efek halus kursor ngezoom dikit (scale 1.03) */}
+                  <div className="w-full h-full transition-transform duration-500 ease-out group-hover/map:scale-[1.03] origin-center">
+                    {/* Iframe Peta: di-zoom langsung via CSS transform scale tanpa reload jaringan */}
+                    <iframe
+                      title={`Google Maps ${loc.title}`}
+                      src={loc.mapsEmbedUrl}
+                      style={{
+                        transform: `scale(${zoomScales[loc.id]})`,
+                        transformOrigin: "center center",
+                      }}
+                      className="w-full h-full border-0 filter contrast-[1.03] transition-transform duration-300 ease-out"
+                      loading="lazy"
+                      allowFullScreen
+                      referrerPolicy="no-referrer-when-downgrade"
+                    />
+                  </div>
 
                   {/* TOMBOL ZOOM MANUAL (+ DAN -) SESUAI REQUEST: HANYA LOGO TANPA TEKS */}
                   <div className="absolute top-3 left-3 z-20 flex items-center bg-white/95 backdrop-blur-md rounded-xl shadow-md border border-amber-300/80 p-1 gap-1">
                     <button
                       type="button"
-                      onClick={() => handleZoomIn(loc.id)}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        handleZoomIn(loc.id);
+                      }}
+                      disabled={zoomScales[loc.id] >= 2.25}
                       title="Perbesar Peta (Zoom In +)"
                       aria-label="Perbesar Peta"
-                      className="w-8 h-8 flex items-center justify-center rounded-lg text-[#8B3E13] hover:bg-[#8B3E13] hover:text-white transition-all active:scale-90 cursor-pointer"
+                      className={`w-8 h-8 flex items-center justify-center rounded-lg transition-all touch-manipulation cursor-pointer ${
+                        zoomScales[loc.id] >= 2.25
+                          ? "text-stone-300 cursor-not-allowed"
+                          : "text-[#8B3E13] hover:bg-[#8B3E13] hover:text-white active:scale-90"
+                      }`}
                     >
                       {/* Bootstrap Icon: bi-zoom-in (Logo Zoom +) */}
                       <svg className="w-4 h-4 fill-current" viewBox="0 0 16 16">
@@ -133,13 +157,24 @@ export default function LocationSection() {
                         <path d="M10.344 11.742q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM6.5 4a.5.5 0 0 1 .5.5v1.5H8.5a.5.5 0 0 1 0 1H7v1.5a.5.5 0 0 1-1 0V7H4.5a.5.5 0 0 1 0-1H6V4.5A.5.5 0 0 1 6.5 4"/>
                       </svg>
                     </button>
+                    
                     <div className="w-[1px] h-4 bg-amber-200" />
+                    
                     <button
                       type="button"
-                      onClick={() => handleZoomOut(loc.id)}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        handleZoomOut(loc.id);
+                      }}
+                      disabled={zoomScales[loc.id] <= 1}
                       title="Perkecil Peta (Zoom Out -)"
                       aria-label="Perkecil Peta"
-                      className="w-8 h-8 flex items-center justify-center rounded-lg text-[#8B3E13] hover:bg-[#8B3E13] hover:text-white transition-all active:scale-90 cursor-pointer"
+                      className={`w-8 h-8 flex items-center justify-center rounded-lg transition-all touch-manipulation cursor-pointer ${
+                        zoomScales[loc.id] <= 1
+                          ? "text-stone-300 cursor-not-allowed"
+                          : "text-[#8B3E13] hover:bg-[#8B3E13] hover:text-white active:scale-90"
+                      }`}
                     >
                       {/* Bootstrap Icon: bi-zoom-out (Logo Zoom -) */}
                       <svg className="w-4 h-4 fill-current" viewBox="0 0 16 16">
@@ -147,6 +182,26 @@ export default function LocationSection() {
                         <path d="M10.344 11.742q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM4.5 6.5A.5.5 0 0 1 5 6h3a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5"/>
                       </svg>
                     </button>
+
+                    {/* Lencana Persentase Zoom Saat Membesar */}
+                    {zoomScales[loc.id] > 1 && (
+                      <>
+                        <div className="w-[1px] h-4 bg-amber-200" />
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            handleResetZoom(loc.id);
+                          }}
+                          title="Klik untuk Reset Zoom"
+                          aria-label="Reset Zoom"
+                          className="px-1.5 h-8 text-[10px] font-bold text-[#8B3E13] hover:bg-[#8B3E13] hover:text-white rounded-lg transition-all touch-manipulation cursor-pointer"
+                        >
+                          {Math.round(zoomScales[loc.id] * 100)}%
+                        </button>
+                      </>
+                    )}
                   </div>
 
                   {/* Tombol Cepat Buka Google Maps Eksternal (Bottom-Right) */}
